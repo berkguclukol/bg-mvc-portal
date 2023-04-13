@@ -1,5 +1,5 @@
 <?php
-const SITE_TITLE = "BG MVC Portal"; // The website title.
+const SITE_TITLE = "[SITE_TITLE]"; // The website title.
 const SITE_URL = "http://[SITE_URL]/"; // The website address.
 const PUBLIC_ROOT = SITE_URL . "public/"; // The path to the public directory.
 const CONTROLLERS_PATH = "application/controllers"; // The path to the controllers files.
