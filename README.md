@@ -3,7 +3,7 @@
 PHP project written in mvc framework that I use for my personal projects.
 ## Technology
 
-[Technology](https://skillicons.dev/icons?i=idea,js,html,scss,bootstrap,jquery,php,cloudflare,mysql&theme=light)
+![Technology](https://skillicons.dev/icons?i=idea,js,html,scss,bootstrap,jquery,php,cloudflare,mysql&theme=light)
 
 ## License
 
