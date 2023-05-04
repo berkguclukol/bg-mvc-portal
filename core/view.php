@@ -1,7 +1,7 @@
 <?php
 class view
 {
-    static function render($file,$data = [])
+    static function render($file,$data = []): void
     {
         if(file_exists(VIEWS_PATH."/{$file}.php")) {
             extract($data);

@@ -1,130 +1,169 @@
 <?php
-class Model
-{
-    /***
-     * @description MongoDB\Client türünde nesne oluşturur.
-     */
-    static $client;
+/*
+* Static PDO MySQL DB Class
+*
+* Sadece ihtiyaç duyulduğunda MySQL
+* bağlantısı yapan ve rahat bir şekilde
+* kullanabileceğiniz bir static PDO sınıfı.
+*
+*/
 
-    static function updateOne($table, $_id, $update)
+class Model {
+
+    /*
+    * PDO sınıf örneğinin barınacağı değişken
+    */
+    static $pdo = null;
+
+    /*
+    * Kullanacağımız veritabanı karakter seti
+    */
+    static $charset = 'UTF8';
+
+    /*
+    * Son yapılan sorguyu saklar
+    */
+    static $last_stmt = null;
+
+    /*
+    * PDO örneğini yoksa oluşturan, varsa
+    * oluşturulmuş olanı döndüren metot
+    */
+    public static function instance()
     {
-        self::$client = new MongoDB\Client(DB_HOST);
-        self::$client->{DB_NAME}->{$table}->updateOne(
-            ['_id' => new MongoDB\BSON\ObjectId($_id)],
-            [
-                '$set' => $update
-            ]
+        return
+            self::$pdo == null ?
+                self::init() :
+                self::$pdo;
+    }
+
+    /*
+    * PDO'yu tanımlayan ve bağlantıyı
+    * kuran metot
+    */
+    public static function init()
+    {
+        self::$pdo = new PDO(
+            'mysql:host=' . DB_HOST .';dbname=' . DB_NAME,
+            DB_USERNAME,
+            DB_PASSWORD
         );
+        self::$pdo->exec('SET NAMES `' . self::$charset . '`');
+        self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+        return self::$pdo;
     }
 
-    static function updateWhere($table, $where, $update) {
-        self::$client = new MongoDB\Client(DB_HOST);
-        self::$client->{DB_NAME}->{$table}->updateOne(
-            $where,
-            [
-                '$set' => $update
-            ]
+    /*
+    * PDO'nun query metoduna bindings
+    * ilave edilmiş metot
+    */
+    public static function query($query, $bindings = null)
+    {
+        if(is_null($bindings))
+        {
+            if(!self::$last_stmt = self::instance()->query($query))
+                return false;
+        }
+        else
+        {
+            self::$last_stmt = self::prepare($query);
+            if(!self::$last_stmt->execute($bindings))
+                return false;
+        }
+
+        return self::$last_stmt;
+    }
+
+    /*
+    * Yapılan sorgunun ilk satırının
+    * ilk değerini döndüren metod
+    */
+    public static function getVar($query, $bindings = null)
+    {
+        if(!$stmt = self::query($query, $bindings))
+            return false;
+
+        return $stmt->fetchColumn();
+    }
+
+    /*
+    * Yapılan sorgunun ilk satırını
+    * döndğren metod
+    */
+    public static function getRow($query, $bindings = null)
+    {
+        if(!$stmt = self::query($query, $bindings))
+            return false;
+
+        return $stmt->fetch();
+    }
+
+    /*
+    * Yapılan sorgunun tüm satırlarını
+    * döndüren metod
+    */
+    public static function get($query, $bindings = null)
+    {
+        if(!$stmt = self::query($query, $bindings))
+            return false;
+
+        $result = array();
+
+        foreach($stmt as $row)
+            $result[] = $row;
+
+        return $result;
+    }
+
+    /*
+    * Query metodu ile aynı işlemi yapar
+    * fakat etkilenen satır sayısını
+    * döndürür
+    */
+    public static function exec($query, $bindings = null)
+    {
+        if(!$stmt = self::query($query, $bindings))
+            return false;
+
+        return $stmt->rowCount();
+    }
+
+    /*
+    * Query metodu ile aynı işlemi yapar
+    * fakat son eklenen ID'yi döndürür
+    */
+    public static function insert($query, $bindings = null)
+    {
+        if(!$stmt = self::query($query, $bindings))
+            return false;
+
+        return self::$pdo->lastInsertId();
+    }
+
+
+    /*
+    * Son gerçekleşen sorgudaki (varsa)
+    * hatayı döndüren metod
+    */
+    public static function getLastError()
+    {
+        $error_info = self::$last_stmt->errorInfo();
+
+        if($error_info[0] == 00000)
+            return false;
+
+        return $error_info;
+    }
+
+    /*
+    * Statik olarak çağırılan ve yukarıda olmayan
+    * tüm metodları PDO'da çağıran sihirli metot
+    */
+    public static function __callStatic($name, $arguments)
+    {
+        return call_user_func_array(
+            array(self::instance(), $name),
+            $arguments
         );
-    }
-
-    /**
-     * @description Verilen tablo adına göre verileri getirir.
-     * @param $table string
-     * @param $limit integer
-     * @param $sort integer
-     * @return array
-     */
-    static function getWithJoin($table, $aggregate): array
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->aggregate($aggregate)->toArray();
-    }
-    /**
-     * @description Verilen tablo adına göre verileri getirir.
-     * @param $table string
-     * @param $limit integer
-     * @param $sort integer
-     * @return array
-     */
-    static function getAll($table, $limit = 0, $sort = 1, $sortCol = "_id"): array
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->find(
-            [],
-            ['limit' => $limit, 'sort' => [$sortCol => $sort]]
-        )->toArray();
-    }
-
-    /**
-     * @description Verilen koşula istinaden belirtilen tablodan veri getirir.
-     * @param $table string
-     * @param $where array
-     * @return array
-     */
-    static function getWhere($table, $where = [], $limit = 0, $sort = 1, $sortCol = "_id")
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->find(
-            $where,
-            ['limit' => $limit, 'sort' => [$sortCol => $sort]]
-        )->toArray();
-    }
-
-    /***
-     * @description Verilen şarta ve belirtilen tablodan uygun tek kayıtı döndürür.
-     * @param $table string
-     * @param $where array
-     * @return array
-     */
-    static function getOne($table, $where = [], $sort = 1)
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->findOne(
-            $where,
-            ['sort' => ["_id" => $sort]]
-        );
-    }
-
-    /***
-     * @description Verilen IDyi belirtilen tablodan bularak kayıt bilgisini döndürür.
-     * @param $table string
-     * @param $id string
-     * @return array
-     */
-    static function getById($table, $id)
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->find(['_id' => new MongoDB\BSON\ObjectId($id)])->toArray();
-    }
-
-    /**
-     * @description Verilen tabloya array olarak gönderilen datayı ekler.
-     * @param $table string
-     * @param $insertData array
-     * @return array
-     */
-    static function insertData($table, $insertData)
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        $result = self::$client->{DB_NAME}->{$table}->insertOne($insertData);
-        $id = $result->getInsertedId();
-        return $id;
-    }
-    static function deleteData($table, $id)
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->deleteOne(['_id' => new MongoDB\BSON\ObjectId ($id)]);
-    }
-    static function deleteWhere($table, $where = [])
-    {
-        self::$client = new MongoDB\Client(DB_HOST);
-        return self::$client->{DB_NAME}->{$table}->deleteMany($where);
-    }
-
-
-    static function phoneBookUpdate($table, $data) {
-        self::$client = new MongoDB\Client(DB_HOST);
-        self::$client->{DB_NAME}->{$table}->deleteMany([]);
-        self::$client->{DB_NAME}->{$table}->insertMany($data);
     }
 }

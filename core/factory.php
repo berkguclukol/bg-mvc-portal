@@ -2,6 +2,11 @@
 
 class Factory
 {
+
+    static function getKey(){
+
+        return $key;
+    }
     static function getPageTitle(): string
     {
         $baseUrl = str_replace("act=", "", explode("&", $_SERVER['QUERY_STRING'])[0]);
