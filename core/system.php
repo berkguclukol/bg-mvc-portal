@@ -16,10 +16,10 @@ class System
            $url[1] = $this->method;
         }
 
-        if(file_exists(CONTROLLERS_PATH."/".$url[0].".php")) {
+        if(file_exists(Variables::CONTROLLERS_PATH()."/".$url[0].".php")) {
             $this->controller = $url[0];
         }
-        require_once CONTROLLERS_PATH . "/" . $this->controller . ".php";
+        require_once Variables::CONTROLLERS_PATH() . "/" . $this->controller . ".php";
         if(class_exists($this->controller)) {
             $this->controller = new $this->controller;
             array_shift($url);

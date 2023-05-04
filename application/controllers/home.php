@@ -4,8 +4,8 @@ class home extends Controller
 {
     public function index()
     {
-        $this->render("common/header");
+        $this->render("layout/header");
         $this->render("home");
-        $this->render("common/footer");
+        $this->render("layout/footer");
     }
 }

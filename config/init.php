@@ -1,10 +1,11 @@
 <?php
-require_once 'core/model.php';
+require_once 'core/database.php';
 require_once 'core/factory.php';
 require_once 'core/controller.php';
 require_once 'core/view.php';
-require_once 'config/Variables.php';
+require_once 'core/variables.php';
 require_once 'core/system.php';
-require_once 'config/Helper.php';
-require_once 'config/Encryption.php';
-require_once 'config/SessionManager.php';
+require_once 'core/helper.php';
+require_once 'core/encryption.php';
+require_once 'core/sessionmanager.php';
+$db = new Database();

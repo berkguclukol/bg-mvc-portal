@@ -1,6 +1,6 @@
 <?php
 
-class customersModel
+class customersmodel
 {
     public function __construct()
     {
@@ -9,16 +9,13 @@ class customersModel
 
     public function load(){
         $response = [
-            "data" => Model::get('SELECT * FROM customers')
+            "data" => Database::getAll("customers")
         ];
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
     public function update(){
         $key = str_replace("key=","", file_get_contents("php://input"));
-
         echo file_get_contents("php://input");
-
-
 
         //Model::query("DELETE FROM customers WHERE CustomerID = '" . $key . "'");
     }
@@ -31,6 +28,6 @@ class customersModel
 
     public function delete(){
         $key = str_replace("key=","", file_get_contents("php://input"));
-        Model::query("DELETE FROM customers WHERE CustomerID = '" . $key . "'");
+        Database::delete('customers',"CustomerID", intval($key));
     }
 }

@@ -1,51 +1,38 @@
-<script>const SITE_URL = "<?=SITE_URL?>";</script>
-<script src="<?=PUBLIC_ROOT?>vendor/jquery/jquery-2.2.4.min.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/bootstrap-5.3.0-alpha3/js/bootstrap.bundle.min.js"></script>
-<!-- DevExtreme library -->
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/polyfill.min.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/exceljs.min.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/FileSaver.min.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/dx.all.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/dx.messages.tr.js"></script>
-<script src="<?=PUBLIC_ROOT?>vendor/devextreme-22.2.3/js/dx.aspnet.data.js"></script>
 <script>
     $(() => {
         DevExpress.localization.locale(navigator.language);
 
         $('#grid').dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
-                key: 'CustomerID',
-                loadUrl: `${SITE_URL}customersmodel/load`,
-                insertUrl: `${SITE_URL}customersmodel/insert`,
-                updateUrl: `${SITE_URL}customersmodel/update`,
-                deleteUrl: `${SITE_URL}customersmodel/delete`,
+                key: 'EmployeeID',
+                loadUrl: `${SITE_URL}employeesModel/load`,
+                insertUrl: `${SITE_URL}employeesModel/insert`,
+                updateUrl: `${SITE_URL}employeesModel/update`,
+                deleteUrl: `${SITE_URL}employeesModel/delete`,
                 onBeforeSend(method, ajaxOptions) {
                     ajaxOptions.xhrFields = {withCredentials: true};
                 }
             }),
             columns: [
                 {
-                    dataField: 'CustomerID',
+                    dataField: 'EmployeeID',
                     caption: 'ID'
                 }, {
-                    dataField: 'CustomerName',
-                    caption: 'Name'
+                    dataField: 'FirstName',
+                    caption: 'First Name'
                 }, {
-                    dataField: 'ContactName',
-                    caption: 'Contact Name'
+                    dataField: 'LastName',
+                    caption: 'Last Name'
                 }, {
-                    dataField: 'Address',
-                    caption: 'Address'
+                    dataField: 'BirthDate',
+                    caption: 'Birth Date'
                 }, {
-                    dataField: 'City',
-                    caption: 'City'
+                    dataField: 'Photo',
+                    caption: 'Photo'
                 }, {
-                    dataField: 'PostalCode',
-                    caption: 'Postal Code'
+                    dataField: 'Notes',
+                    caption: 'Notes'
                 }, {
-                    dataField: 'Country',
-                    caption: 'Country'
-                },{
                     type: "buttons",
                     buttons: [
                         {
