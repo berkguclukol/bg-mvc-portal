@@ -1,4 +1,5 @@
 .idea
 /config/Variables.php
 /public/vendor/bootstrap-5.3.0-alpha3/
+/public/vendor/jquery/
 /public/vendor/devextreme-22.2.3/
