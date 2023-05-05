@@ -15,8 +15,14 @@
             }),
             columns: [
                 {
-                    dataField: 'EmployeeID',
-                    caption: 'ID'
+                    dataField: 'Photo',
+                    caption: 'Photo',
+                    alignment: "center",
+                    cellTemplate(container, options) {
+                        $('<div>')
+                            .append($('<img>', { src: options.value }))
+                            .appendTo(container);
+                    },
                 }, {
                     dataField: 'FirstName',
                     caption: 'First Name'
@@ -26,10 +32,7 @@
                 }, {
                     dataField: 'BirthDate',
                     caption: 'Birth Date'
-                }, {
-                    dataField: 'Photo',
-                    caption: 'Photo'
-                }, {
+                }, , {
                     dataField: 'Notes',
                     caption: 'Notes'
                 }, {
