@@ -1,4 +1,5 @@
 <?php
+
 class Database extends PDO
 {
     // Tablodaki asıl anahtar (Primary key)
@@ -14,14 +15,11 @@ class Database extends PDO
      */
     public function __construct()
     {
+        $conn = "mysql:host=" . DB_HOST . "; port=" . DB_PORT . "; dbname=" . DB_NAME . ";";
         try {
-            self::$pdo = new PDO(
-                'mysql:host=' .Variables::DB_HOST() .';dbname=' .Variables::DB_NAME(),
-                Variables::DB_USERNAME(),
-                Variables::DB_PASSWORD()
-            );
-            self::$pdo->exec("SET NAMES " . Variables::DB_CHARSET());
-            self::$pdo->exec("SET CHARACTER SET " . Variables::DB_CHARSET());
+            self::$pdo = new PDO($conn,DB_USERNAME,DB_PASSWORD);
+            self::$pdo->exec("SET NAMES " . DB_CHARSET);
+            self::$pdo->exec("SET CHARACTER SET " . DB_CHARSET);
         } catch (PDOException $e) {
             exit($e->getMessage());
         }
@@ -70,11 +68,11 @@ class Database extends PDO
     /**
      * Tablo adına ve koşullara göre çoklu veri döndürür
      * @param string $table Tablo adı
-     * @param string $conditions Şartlar (type=? gibi)
+     * @param string|null $conditions Şartlar (type=? gibi)
      * @param array $parameters Parametreler (array('post') gibi)
      * @return object Obje şeklinde döndürür ($post->title gibi)
      */
-    public static function getAll($table, $conditions = null, $parameters = array())
+    public static function getAll(string $table, string $conditions = null, array $parameters = array())
     {
         self::$query = self::$pdo->prepare('SELECT * FROM ' . $table . ' ' . $conditions);
         self::$query->execute($parameters);

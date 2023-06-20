@@ -6,7 +6,7 @@
                     <h1 class="display-5 fw-bold">Welcome to the Northwind home page.</h1>
                     <p class="col-md-8 fs-4">PHP project written in mvc framework that I use for my personal
                         projects. Use Northwind mysql DB.</p>
-                    <a href="<?=Variables::SITE_URL()?>pages/customers" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="<?=SITE_URL?>pages/customers" class="btn btn-primary btn-lg">Get Started</a>
                 </div>
             </div>
         </div>
